@@ -1,0 +1,114 @@
+:root {
+  color-scheme: dark;
+  --bg: #0f1220;
+  --bg2: #1a1f34;
+  --accent: #5ad8ff;
+  --accent2: #8effb0;
+  --danger: #ff6b7a;
+  --text: #f5f7ff;
+  --muted: #b2bdd9;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: radial-gradient(circle at top, #1e2747 0%, var(--bg) 60%);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.app-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+h1 { margin-bottom: 0.25rem; }
+.subtitle { color: var(--muted); margin-top: 0; }
+
+.panel {
+  background: linear-gradient(180deg, #222a48, var(--bg2));
+  border: 1px solid #3f4b76;
+  border-radius: 0.8rem;
+  padding: 0.9rem;
+  margin: 1rem 0;
+}
+
+.button-row, .grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.grid button {
+  min-width: 120px;
+}
+
+button {
+  border: 1px solid #5d6ca1;
+  border-radius: 0.6rem;
+  background: #29335a;
+  color: var(--text);
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:hover { border-color: var(--accent); }
+button.selected {
+  background: linear-gradient(120deg, #3068a7, #248d76);
+  border-color: var(--accent2);
+}
+
+button.secondary {
+  background: #1f2543;
+}
+
+.hud-meta {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  color: var(--muted);
+}
+
+.top-hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+}
+
+canvas {
+  width: 100%;
+  border: 2px solid #4f6197;
+  border-radius: 0.6rem;
+  background: linear-gradient(#65b5ff, #bde0ff 60%, #90b67d 60%);
+}
+
+.controls-row {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.65);
+}
+.modal.hidden { display: none; }
+
+.modal-card {
+  background: #1d2340;
+  border: 1px solid #5b6aa2;
+  border-radius: 0.8rem;
+  width: min(480px, 90vw);
+  padding: 1rem;
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skybound Trials</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section id="menu-screen" class="screen active">
+      <h1>Skybound Trials</h1>
+      <p class="subtitle">Climb to the summit, clear all levels, and earn cash.</p>
+
+      <div class="panel">
+        <h2>Difficulty</h2>
+        <div id="difficulty-buttons" class="button-row"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Levels</h2>
+        <div id="level-buttons" class="grid"></div>
+      </div>
+
+      <div class="hud-meta">
+        <p><strong>Total Money:</strong> $<span id="money-value">0</span></p>
+        <p><strong>Best Time:</strong> <span id="best-time">--</span></p>
+      </div>
+
+      <button id="open-help" class="secondary">How to Play</button>
+    </section>
+
+    <section id="game-screen" class="screen">
+      <div class="top-hud">
+        <span>Level: <strong id="hud-level"></strong></span>
+        <span>Difficulty: <strong id="hud-difficulty"></strong></span>
+        <span>Coins: <strong id="hud-coins">0</strong></span>
+        <span>Time: <strong id="hud-time">0.0</strong>s</span>
+        <span>Lives: <strong id="hud-lives">3</strong></span>
+      </div>
+      <canvas id="game" width="960" height="540" aria-label="Game canvas"></canvas>
+      <div class="controls-row">
+        <button id="back-menu" class="secondary">Back to Menu</button>
+        <button id="restart-level">Restart</button>
+      </div>
+    </section>
+
+    <section id="modal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <h2 id="modal-title">Message</h2>
+        <p id="modal-text"></p>
+        <button id="modal-close">Close</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
