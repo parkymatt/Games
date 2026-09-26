@@ -1,0 +1,8 @@
+{
+  "name": "Blacksite co-op",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": { "label": "Blacksite multiplayer", "onAutoForward": "notify" }
+  }
+}
