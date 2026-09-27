@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Nova Clicker</title>
+  <style>
+    :root {
+      --bg1: #0a0f2d;
+      --bg2: #130f40;
+      --panel: rgba(13, 18, 56, 0.8);
+      --accent: #29f3ff;
+      --accent2: #ff4fd8;
+      --success: #78ff72;
+      --text: #e8ecff;
+      --muted: #9ba6da;
+      --warning: #ffd166;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #25116f 0%, var(--bg1) 40%, #050716 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(2px 2px at 20% 30%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 70% 70%, #d8f1ff, transparent 60%),
+        radial-gradient(2px 2px at 40% 80%, #f7dbff, transparent 60%),
+        radial-gradient(1px 1px at 90% 40%, #b6d4ff, transparent 60%),
+        radial-gradient(2px 2px at 10% 70%, #ffe5fd, transparent 60%);
+      opacity: 0.45;
+      animation: drift 20s linear infinite;
+    }
+
+    @keyframes drift {
+      from { transform: translateY(0); }
+      to { transform: translateY(-40px); }
+    }
+
+    .app {
+      position: relative;
+      z-index: 2;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 2fr 1fr;
+      min-height: 100vh;
+      align-content: center;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4),
+                  inset 0 0 30px rgba(41, 243, 255, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .main {
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+      letter-spacing: 1px;
+      text-shadow: 0 0 16px rgba(41, 243, 255, 0.45);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .score {
+      font-size: clamp(1.5rem, 4.2vw, 2.8rem);
+      color: var(--accent);
+      font-weight: 700;
+      text-shadow: 0 0 20px rgba(41, 243, 255, 0.5);
+    }
+
+    .per-second {
+      color: var(--success);
+      font-weight: 700;
+      margin-top: -6px;
+    }
+
+    .planet-wrap {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      display: grid;
+      place-items: center;
+    }
+
+    .pulse {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid rgba(41, 243, 255, 0.18);
+      animation: pulse 2.6s infinite;
+    }
+
+    .pulse:nth-child(2) {
+      animation-delay: 0.7s;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.86); opacity: 0.65; }
+      70% { opacity: 0.05; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+
+    .clicker {
+      width: 190px;
+      height: 190px;
+      border: none;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #7df8ff 0%, #3d8fff 45%, #2b2d9f 100%);
+      color: #f5fbff;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(41, 243, 255, 0.35),
+                  inset -12px -16px 24px rgba(0, 0, 0, 0.35),
+                  inset 10px 10px 30px rgba(255, 255, 255, 0.2);
+      transition: transform 120ms ease, filter 140ms ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    .clicker:hover {
+      filter: brightness(1.08);
+    }
+
+    .clicker:active {
+      transform: scale(0.93);
+      filter: brightness(1.15);
+    }
+
+    .boost-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    .ability {
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      background: linear-gradient(145deg, #5f1f9a, #2f0f57);
+      color: #f6d7ff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 130ms ease, box-shadow 130ms ease;
+      min-width: 180px;
+    }
+
+    .ability[disabled] {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .ability:not([disabled]):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(192, 107, 255, 0.28);
+    }
+
+    .cooldown {
+      color: var(--warning);
+      font-size: 0.9rem;
+      min-height: 1.2rem;
+    }
+
+    .shop {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .shop h2 {
+      margin: 0 0 2px;
+      font-size: 1.15rem;
+      color: #dcdefc;
+      letter-spacing: 0.4px;
+    }
+
+    .shop-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .upgrade {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 11px;
+      text-align: left;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 120ms ease, transform 120ms ease;
+      font: inherit;
+    }
+
+    .upgrade .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 700;
+    }
+
+    .upgrade .desc {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .upgrade:not([disabled]):hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .upgrade[disabled] {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .floating {
+      position: absolute;
+      font-weight: 800;
+      color: #b5f9ff;
+      text-shadow: 0 0 15px rgba(117, 246, 255, 0.7);
+      animation: rise 900ms ease-out forwards;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    @keyframes rise {
+      from { transform: translateY(0) scale(1); opacity: 1; }
+      to { transform: translateY(-65px) scale(1.06); opacity: 0; }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(12, 18, 50, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 9px 15px;
+      font-size: 0.92rem;
+      color: #f8ebff;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 840px) {
+      body { overflow: auto; }
+      .app {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 14px;
+      }
+      .planet-wrap {
+        width: 220px;
+        height: 220px;
+      }
+      .clicker {
+        width: 170px;
+        height: 170px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <main class="app">
+    <section class="panel main" id="mainPanel">
+      <h1>🌌 Neon Nova Clicker</h1>
+      <p class="subtitle">Harvest Starbits. Build an interstellar empire.</p>
+      <div class="score" id="score">0 Starbits</div>
+      <div class="per-second" id="perSecond">+0/s</div>
+
+      <div class="planet-wrap" id="planetWrap">
+        <div class="pulse"></div>
+        <div class="pulse"></div>
+        <button class="clicker" id="clickBtn" type="button">TAP CORE</button>
+      </div>
+
+      <div class="boost-row">
+        <button class="ability" id="overdriveBtn" type="button">
+          ⚡ Overdrive x2 clicks (10s)
+        </button>
+      </div>
+      <div class="cooldown" id="cooldownText"></div>
+    </section>
+
+    <aside class="panel shop" id="shopPanel">
+      <h2>🚀 Upgrade Bay</h2>
+      <p class="shop-note">Spend Starbits to scale your production.</p>
+      <div id="upgrades"></div>
+      <p class="shop-note" id="multiplierInfo">Global Multiplier: x1.00</p>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const state = {
+      starbits: 0,
+      clickPower: 1,
+      passivePerSec: 0,
+      globalMultiplier: 1,
+      overdriveActiveUntil: 0,
+      overdriveCooldownUntil: 0,
+      upgrades: [
+        { id: "cursor", name: "Nano Drone", baseCost: 20, cost: 20, owned: 0, perSec: 0.5, description: "+0.5 Starbits/s" },
+        { id: "reactor", name: "Fusion Reactor", baseCost: 80, cost: 80, owned: 0, perSec: 2.5, description: "+2.5 Starbits/s" },
+        { id: "satellite", name: "Orbital Satellite", baseCost: 350, cost: 350, owned: 0, perSec: 12, description: "+12 Starbits/s" },
+        { id: "warp", name: "Warp Rig", baseCost: 1200, cost: 1200, owned: 0, perSec: 42, description: "+42 Starbits/s" },
+      ],
+    };
+
+    const scoreEl = document.getElementById("score");
+    const perSecondEl = document.getElementById("perSecond");
+    const upgradesEl = document.getElementById("upgrades");
+    const multiplierInfoEl = document.getElementById("multiplierInfo");
+    const clickBtn = document.getElementById("clickBtn");
+    const planetWrap = document.getElementById("planetWrap");
+    const toastEl = document.getElementById("toast");
+    const overdriveBtn = document.getElementById("overdriveBtn");
+    const cooldownText = document.getElementById("cooldownText");
+
+    const format = (n) => {
+      if (n < 1000) return n.toFixed(n % 1 ? 1 : 0);
+      const units = ["K", "M", "B", "T", "Qa", "Qi"];
+      let unitIndex = -1;
+      let value = n;
+      while (value >= 1000 && unitIndex < units.length - 1) {
+        value /= 1000;
+        unitIndex += 1;
+      }
+      return `${value.toFixed(value >= 100 ? 0 : value >= 10 ? 1 : 2)}${units[unitIndex]}`;
+    };
+
+    function calculatePerSecond() {
+      return state.passivePerSec * state.globalMultiplier;
+    }
+
+    function clickValue() {
+      const base = state.clickPower * state.globalMultiplier;
+      const boosted = Date.now() < state.overdriveActiveUntil ? base * 2 : base;
+      return boosted;
+    }
+
+    function updateUI() {
+      scoreEl.textContent = `${format(state.starbits)} Starbits`;
+      perSecondEl.textContent = `+${format(calculatePerSecond())}/s`;
+      multiplierInfoEl.textContent = `Global Multiplier: x${state.globalMultiplier.toFixed(2)}`;
+
+      const now = Date.now();
+      if (now < state.overdriveActiveUntil) {
+        const left = Math.ceil((state.overdriveActiveUntil - now) / 1000);
+        cooldownText.textContent = `⚡ Overdrive active: ${left}s`;
+        overdriveBtn.disabled = true;
+      } else if (now < state.overdriveCooldownUntil) {
+        const left = Math.ceil((state.overdriveCooldownUntil - now) / 1000);
+        cooldownText.textContent = `Overdrive recharging: ${left}s`;
+        overdriveBtn.disabled = true;
+      } else {
+        cooldownText.textContent = "Overdrive ready.";
+        overdriveBtn.disabled = false;
+      }
+
+      for (const button of upgradesEl.querySelectorAll("button")) {
+        const index = Number(button.dataset.upgradeIndex);
+        const item = state.upgrades[index];
+        button.disabled = state.starbits < item.cost;
+        button.querySelector(".cost").textContent = `${format(item.cost)} Starbits`;
+        button.querySelector(".owned").textContent = `Owned: ${item.owned}`;
+      }
+    }
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add("show");
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => toastEl.classList.remove("show"), 1400);
+    }
+
+    function spawnFloating(text, x, y) {
+      const pop = document.createElement("div");
+      pop.className = "floating";
+      pop.textContent = `+${text}`;
+      pop.style.left = `${x}px`;
+      pop.style.top = `${y}px`;
+      planetWrap.appendChild(pop);
+      setTimeout(() => pop.remove(), 900);
+    }
+
+    function createUpgradeButtons() {
+      upgradesEl.innerHTML = "";
+      state.upgrades.forEach((item, index) => {
+        const btn = document.createElement("button");
+        btn.className = "upgrade";
+        btn.type = "button";
+        btn.dataset.upgradeIndex = index;
+        btn.innerHTML = `
+          <div class="top">
+            <span>${item.name}</span>
+            <span class="cost">${format(item.cost)} Starbits</span>
+          </div>
+          <span class="desc">${item.description}</span>
+          <span class="desc owned">Owned: ${item.owned}</span>
+        `;
+
+        btn.addEventListener("click", () => {
+          if (state.starbits < item.cost) return;
+          state.starbits -= item.cost;
+          item.owned += 1;
+          state.passivePerSec += item.perSec;
+          item.cost = Math.ceil(item.baseCost * Math.pow(1.18, item.owned));
+
+          if (item.owned % 10 === 0) {
+            state.globalMultiplier += 0.08;
+            showToast(`Milestone! ${item.name} x${item.owned} → Multiplier up!`);
+          } else {
+            showToast(`${item.name} online.`);
+          }
+
+          updateUI();
+        });
+
+        upgradesEl.appendChild(btn);
+      });
+    }
+
+    clickBtn.addEventListener("click", (event) => {
+      const gain = clickValue();
+      state.starbits += gain;
+      const rect = planetWrap.getBoundingClientRect();
+      const x = event.clientX - rect.left - 20 + (Math.random() * 22 - 11);
+      const y = event.clientY - rect.top - 8 + (Math.random() * 20 - 10);
+      spawnFloating(format(gain), Math.max(12, x), Math.max(20, y));
+      updateUI();
+    });
+
+    overdriveBtn.addEventListener("click", () => {
+      const now = Date.now();
+      if (now < state.overdriveCooldownUntil || now < state.overdriveActiveUntil) return;
+      state.overdriveActiveUntil = now + 10_000;
+      state.overdriveCooldownUntil = now + 30_000;
+      showToast("Overdrive engaged! Click power doubled.");
+      updateUI();
+    });
+
+    setInterval(() => {
+      state.starbits += calculatePerSecond() / 10;
+      updateUI();
+    }, 100);
+
+    setInterval(updateUI, 250);
+
+    createUpgradeButtons();
+    updateUI();
+  </script>
+</body>
+</html>
